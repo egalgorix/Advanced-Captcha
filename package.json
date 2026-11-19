@@ -1,21 +1,21 @@
 {
   "name": "advancedcaptcha",
-  "version": "2.0",
-  "description": "",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Self-hosted CAPTCHA verification demo",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+  "engines": {
+    "node": ">=22"
   },
-  "keywords": [],
-  "author": "egehan0250",
-  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "author": "egalgorix",
+  "license": "CC-BY-NC-SA-4.0",
   "dependencies": {
-    "body-parser": "^1.20.3",
-    "crypto": "^1.0.1",
-    "dayjs": "^1.11.13",
-    "express": "^4.21.2",
-    "express-rate-limit": "^7.4.1",
-    "svg-captcha": "^1.4.0"
+    "express": "5.3.0",
+    "helmet": "8.3.0",
+    "svg-captcha": "1.4.0"
   }
 }

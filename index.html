@@ -1,92 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Secure CAPTCHA</title>
-        <link rel="stylesheet" href="/captcha.css" />
-    </head>
-    <body>
-        <div id="captcha-container">
-            <h1>CAPTCHA Verification</h1>
-            <p>Please verify the CAPTCHA below:</p>
-            <div id="captcha-image"></div>
-            <div class="form-control">
-                <input class="input input-alt" placeholder="Enter CAPTCHA code." id="userInput" required="" type="text" />
-                <span class="input-border input-border-alt"></span>
-            </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try server-side CAPTCHA verification.">
+  <title>Advanced Captcha</title>
+  <link rel="stylesheet" href="/captcha.css">
+  <script src="/captcha.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="intro">
+      <p class="product-name">Advanced Captcha</p>
+      <h1>Verify the code</h1>
+      <p id="challenge-help">Enter the six characters below. Case doesn’t matter.</p>
+    </header>
 
-            <button id="verifyButton">
-                <div class="svg-wrapper-1">
-                    <div class="svg-wrapper">
-                        <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0 0h24v24H0z" fill="none"></path>
-                            <path
-                                d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z"
-                                fill="currentColor"
-                            ></path>
-                        </svg>
-                    </div>
-                </div>
-                <span>Verify</span>
-            </button>
-            <p id="verificationStatus"></p>
+    <form id="verification-form">
+      <div class="picture">
+        <img id="challenge-image" alt="Six-character CAPTCHA code" width="260" height="92" hidden>
+        <span id="challenge-placeholder">Loading code…</span>
+      </div>
+
+      <div class="answer-row">
+        <div class="answer-field">
+          <label for="answer">Verification code</label>
+          <input id="answer" name="answer" type="text" maxlength="6" minlength="6"
+            aria-describedby="challenge-help" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
         </div>
+        <button type="button" id="refresh">New code</button>
+      </div>
 
-        <script>
-            let token = "";
+      <div hidden>
+        <label for="reference">Leave this field empty</label>
+        <input id="reference" name="reference" type="text" autocomplete="off" tabindex="-1" maxlength="256">
+      </div>
+      <div id="security-check" aria-label="Additional security verification" hidden></div>
 
-            // Load CAPTCHA
-            async function loadCaptcha() {
-                const response = await fetch("/generate-captcha");
-                const data = await response.json();
-                token = data.token;
-                document.getElementById("captcha-image").innerHTML = data.svg;
-            }
-
-            // Verify CAPTCHA
-            document.getElementById("verifyButton").addEventListener("click", async () => {
-                const status = document.getElementById("verificationStatus");
-
-                const trackButtonClick = await fetch("/track-button-click", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ button: "verifyButton" }),
-                });
-                if (trackButtonClick.success === false) {
-                    console.log("Failed to track button click.");
-                    status.innerHTML = "Opps! You clicked the button too many times. Please try again later.";
-                    status.style.color = "red";
-                    return;
-                }
-                const userInput = document.getElementById("userInput").value;
-
-                const response = await fetch("/verify-captcha", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ token, userInput }),
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    status.innerHTML = "CAPTCHA verified successfully.";
-                    status.style.color = "green";
-                } else {
-                    status.innerHTML = "CAPTCHA verification failed. Please try again.";
-                    status.style.color = "red";
-                    if (result.code === 429) {
-                        const svg = document.getElementById("captcha-image");
-                        svg.innerHTML = result.svg;
-                        status.innerHTML = "Opps! You clicked the button too many times. Please try again later.";
-                        status.style.color = "red";
-                        return;
-                    }
-                    loadCaptcha();
-                }
-            });
-
-            loadCaptcha();
-        </script>
-    </body>
+      <div class="form-footer">
+        <p id="status" role="status" aria-atomic="true"></p>
+        <button id="submit" type="submit" disabled>Verify</button>
+      </div>
+      <noscript>JavaScript is required to verify the code.</noscript>
+    </form>
+  </main>
+</body>
 </html>

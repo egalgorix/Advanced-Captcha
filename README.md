@@ -1,64 +1,65 @@
-# Advanced-Captcha
+# Advanced Captcha
 
-**Next-Gen Captcha System with Enhanced Security & Performance**
+A self-hosted CAPTCHA verification demo for developers building and testing server-side bot controls with Express.
 
-## 📸 Images
+[Türkçe özet](#türkçe)
 
-![Captcha Screenshot](https://github.com/user-attachments/assets/9322c912-30fb-4d78-a76d-1ae8bc3e39d4)
+<img src="docs/images/preview.png" alt="Advanced Captcha verification screen with a six-character image, code input, and controls to refresh or verify the code" width="500">
 
----
+## What it does
 
-## Features
+- Generates a six-character CAPTCHA on the server and binds it to a signed, HttpOnly session cookie. Each code expires in two minutes, allows five wrong answers, and is consumed on success.
+- Limits challenge generation and verification separately by session and IP. A global rate limit also caps challenge generation.
+- Uses a honeypot and recent request patterns to flag automation. A flagged session may have to solve a second challenge.
+- Supports optional Cloudflare Turnstile validation on the server. Local mode works without contacting Turnstile.
 
-- **💎 Enhanced Security with Double Hashing**:  
-  Uses Crypto-js for encryption, ensuring that every captcha validation process is secure. Double hashing is applied, and the encrypted code is stored in LocalStorage for extra protection.
+## Quick start
 
-- **⏳ Intelligent Wait Time**:  
-  After 5 incorrect attempts, the system blocks further submissions and enforces a 5-minute wait time, preventing brute-force attacks.
+**Requirements** · Node.js 22 or newer and npm.
 
-- **🖼️ Complex Security Image**:  
-  The captcha image is more intricate and difficult for bots to solve, improving security.
+```sh
+npm ci
+npm start
+```
 
-- **🎨 Page Layout Improvements**:  
-  CSS has been improved to fix layout issues and provide a more user-friendly interface.
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000/).
 
-- **🔒 Extra Privacy Measures**:  
-  Additional security measures are implemented to ensure user privacy, preventing unauthorized access and preserving anonymity.
+## Usage
 
-- **⚡ Fast and Responsive**:  
-  Optimized for speed, providing a quick and smooth user experience without compromising on security.
+Enter the six characters shown and select **Verify**. A correct answer shows **Verification complete**. Select **New code** to load another challenge. Three wrong answers followed by the correct answer demonstrate the additional verification step.
 
-- **📱 Fully Compatible Across Devices**:  
-  Fully responsive design, ensuring a consistent experience across various screen sizes and devices.
+## Configuration
 
-- **💡 Detailed Logging**:  
-  Captures detailed logs of invalid attempts to assist with monitoring and potential security audits.
+| Setting | Purpose | Default or requirement |
+| --- | --- | --- |
+| `HOST` | Bind address | `127.0.0.1` |
+| `PORT` | HTTP port | `3000` |
+| `APP_ORIGIN` | Canonical public origin without a trailing slash | Required in production and when using Turnstile |
+| `TURNSTILE_SITE_KEY` | Public widget key | Optional, used with the secret key |
+| `TURNSTILE_SECRET_KEY` | Server-side validation key | Optional, kept on the server |
 
----
+Use an HTTPS origin with `NODE_ENV=production`. The HTTPS proxy terminates TLS and the app issues a Secure, host-only cookie. Configure IP limits at the proxy if it is the app’s direct peer. When enabled, Turnstile validates the token against the expected hostname, verification action, and challenge identifier. [Turnstile server-side validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)
 
-## Description
+## Tests
 
-**Advanced-Captcha** provides enhanced security features compared to traditional captchas:
+```sh
+npm test
+```
 
-- **Double Encryption** using Crypto-js for secure validation.
-- **Automated Blocking** and enforced wait time after multiple failed attempts.
-- **Complex Captcha Images** with noise and distortion to prevent automated solutions.
-- **Improved User Interface** with CSS fixes for a polished look.
-- **Privacy-Focused Design** to protect user information and prevent unauthorized access.
+The suite covers session binding, expiry, one-time use, rate limits, additional verification, and the Turnstile integration with a simulated provider.
 
----
+## Project status
+
+**Demo** · Challenge and rate-limit state live in one Node.js process. A restart clears that state. For multiple instances, use shared storage with atomic challenge consumption and attempt counting. The visual puzzle supports keyboard controls and announces status updates. An audio alternative is outside the demo.
+
+## Türkçe
+
+Advanced Captcha, güvenlik kodunu sunucuda üreten ve doğrulayan bir Express demosu. Node.js 22 veya üzeriyle `npm ci`, ardından `npm start` çalıştır. Kod oturuma bağlıdır, iki dakika geçerlidir ve beş yanlış deneme hakkı vardır. Şüpheli tekrarlarda ikinci bir kod istenebilir. Cloudflare Turnstile isteğe bağlıdır.
 
 ## License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License** (CC BY-NC-SA 4.0).
-
-[![CC BY-NC-SA 4.0 License](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[CC BY-NC-SA 4.0](LICENSE)
 
 ---
 
-## Support & Contact
-
-- ✨ [For Support](https://github.com/sponsors/egehan0250)  
-- 🏓 [Instagram](https://www.instagram.com/egehan.kntas)
-- 🧨 All kinds of projects are made.  
-- ☄️ [Click for Contact](mailto:egehankontas55@gmail.com)
+Built by [**@egalgorix**](https://github.com/egalgorix)
